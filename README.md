@@ -50,7 +50,13 @@ If you want to test extents, you can download just data from a single url by edi
   catalog.datasets = [catalog.datasets[0],]
 ```
 
-and then open that file and check it out.
+...and then download just that catalog...
+
+```
+DownloadCatalogSlice(catalog,...
+```
+
+... then open the nc file that is created and check it out!
 
 If you want to download just a few pixels from lots of models, you can build on the DownloadPoints function. No support for concatenation or reading a JSON file, but you give it latitude and longitudes, not grid coordinates. 
 
