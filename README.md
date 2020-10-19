@@ -5,6 +5,7 @@ David.Rayner@gu.se
 
 ### What you will need:
 
+```
 import json
 import os
 import re
@@ -15,8 +16,9 @@ from pydap.client import open_url
 from pydap.cas.esgf import setup_session
 from siphon.catalog import TDSCatalog
 import xarray as xr
+```
 
-In addition, you must rename config_RENAME_ME.py to config.py and add your openid and password! Also, configure the tmpdirname variable in config.py
+In addition, you must rename config_RENAME_ME.py to config.py and add your openid! Also, configure the tmpdirname variable in config.py
 
 ### What else you will need:
 
