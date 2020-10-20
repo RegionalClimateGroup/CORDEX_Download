@@ -53,6 +53,7 @@ class CatalogEntry:
     self.title = title
     self.variable = variable
     self.datasets = datasets
+    self.__xarray = None
     
   def __repr__(self):  
     """ Just a stringified dictionary
@@ -69,8 +70,21 @@ class CatalogEntry:
   def GetXarrayDatasetList(self,dirname):
     """ open all the files! assuming they are downlaoded...
     """
-    return [xr.open_dataset(os.path.join(dirname,d.name)) for d in self.datasets]
-
+    if self.__xarray == None:
+      self.__xarray = [xr.open_dataset(os.path.join(dirname,d.name)) for d in self.datasets]
+    return self.__xarray
+  
+  def CloseXarrayDatasetList(self):
+    """
+    close the xarray list
+    """
+    if self.__xarray==None:
+      Message("There were no xarray opened for the datasets!",2)
+    else:
+      Message("closing files...",2)
+      [xr.close() for xr in self.__xarray]  
+      self.__xarray = None
+  
   def Print(self):
     """ Screen pretty printer
     """
@@ -138,6 +152,7 @@ class JSONParser:
     for c in self.Catalog:
       c.Print()
   
+    
 def ConcatenatedCatalogSlice(catalog, Outdir , rlat_idx=None, rlon_idx=None, 
                              retain_raw_files=True, session=None):
   """ Download all files for a CatalogEntry
@@ -207,7 +222,9 @@ def ConcatenatedCatalogSlice(catalog, Outdir , rlat_idx=None, rlon_idx=None,
   xList = catalog.GetXarrayDatasetList(dirname)
   st_new = xr.concat(xList, dim='time')
   st_new.to_netcdf(outfile)
-
+  st_new.close()
+  catalog.CloseXarrayDatasetList()
+  
   if not retain_raw_files:
     for f in catalog.GetFileList(dirname):
       generic_lib.RemoveFile(f)
@@ -242,9 +259,9 @@ def DownloadCatalogSlice(catalog, Outdir , rlat_idx=None, rlon_idx=None, session
   try:
     for c in catalog:
       DownloadCatalogSlice(c, Outdir, rlat_idx, rlon_idx, session)
-      return
+    return
   except TypeError:
-      pass
+    pass
     
   generic_lib.CheckDirExists(Outdir)
 
@@ -323,36 +340,38 @@ def DownloadSlice(variable,  url, outfile, rlat_idx=None, rlon_idx=None, time_id
   # open a new netCDF file for writing, and download data and write it in directly!
   Message('   ... downloading and writing to %s...' % outfile, 2)
 
-  with Dataset(outfile,'w', format='NETCDF4') as ncfile:
-        for name in d.attributes['NC_GLOBAL']:
-            attr_value=d.attributes['NC_GLOBAL'][name]
-            if name[0] != '_' and isinstance(attr_value, str): 
-              ncfile.setncattr(name,attr_value)
-      
-        # create the x and y dimensions.
-        ncfile.createDimension('rlon',template.shape[1])
-        ncfile.createDimension('rlat',template.shape[0])
-        ncfile.createDimension('time',None)
-      
-        times = ncfile.createVariable('time',d['time'].dtype.name,('time',))
-        rlats = ncfile.createVariable('rlat',d['rlat'].dtype.name,('rlat',))
-        rlons = ncfile.createVariable('rlon',d['rlat'].dtype.name,('rlon',))
-        latitudes = ncfile.createVariable('lat',d['lat'].array.dtype.name,('rlat','rlon',))
-        longitudes = ncfile.createVariable('lon',d['lat'].array.dtype.name,('rlat','rlon',))
-        M = ncfile.createVariable(variable,d[variable].array.dtype.name,('time','rlat','rlon',))      
-        
-        rlats[:] = d['rlat'].data[rlat_idx]
-        rlons[:] = d['rlon'].data[rlon_idx]
-        latitudes[:,:]= d['lat'].array.data[rlat_idx,rlon_idx]
-        longitudes[:,:]= d['lon'].array.data[rlat_idx,rlon_idx]
-        times[:]=d['time'].data[:]
-        M[:,:,:]=d[variable].array.data[time_idx,rlat_idx,rlon_idx]
-       
-        for cvar in ('time',variable,'rlat','rlon','lat','lon'):
-          for name in d[cvar].attributes:
-            attr_value=d[cvar].attributes[name]
-            if name[0] != '_' and isinstance(attr_value, str): 
-              ncfile.variables[cvar].setncattr(name, attr_value )
+  #with Dataset(outfile,'w', format='NETCDF4') as ncfile:
+  ncfile = Dataset(outfile,'w', format='NETCDF4')
+  for name in d.attributes['NC_GLOBAL']:
+      attr_value=d.attributes['NC_GLOBAL'][name]
+      if name[0] != '_' and isinstance(attr_value, str): 
+        ncfile.setncattr(name,attr_value)
+
+  # create the x and y dimensions.
+  ncfile.createDimension('rlon',template.shape[1])
+  ncfile.createDimension('rlat',template.shape[0])
+  ncfile.createDimension('time',None)
+
+  times = ncfile.createVariable('time',d['time'].dtype.name,('time',))
+  rlats = ncfile.createVariable('rlat',d['rlat'].dtype.name,('rlat',))
+  rlons = ncfile.createVariable('rlon',d['rlat'].dtype.name,('rlon',))
+  latitudes = ncfile.createVariable('lat',d['lat'].array.dtype.name,('rlat','rlon',))
+  longitudes = ncfile.createVariable('lon',d['lat'].array.dtype.name,('rlat','rlon',))
+  M = ncfile.createVariable(variable,d[variable].array.dtype.name,('time','rlat','rlon',))      
+  
+  rlats[:] = d['rlat'].data[rlat_idx]
+  rlons[:] = d['rlon'].data[rlon_idx]
+  latitudes[:,:]= d['lat'].array.data[rlat_idx,rlon_idx]
+  longitudes[:,:]= d['lon'].array.data[rlat_idx,rlon_idx]
+  times[:]=d['time'].data[:]
+  M[:,:,:]=d[variable].array.data[time_idx,rlat_idx,rlon_idx]
+ 
+  for cvar in ('time',variable,'rlat','rlon','lat','lon'):
+    for name in d[cvar].attributes:
+      attr_value=d[cvar].attributes[name]
+      if name[0] != '_' and isinstance(attr_value, str): 
+        ncfile.variables[cvar].setncattr(name, attr_value )
+  ncfile.close()
   Message('done.', 2)
  
 
