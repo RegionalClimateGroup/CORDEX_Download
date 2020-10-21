@@ -202,9 +202,6 @@ def ConcatenatedCatalogSlice(catalog, Outdir , rlat_idx=None, rlon_idx=None,
 
   dirname = config.tmpdirname
 
-  Message('Directory for the downloads: %s' % dirname,2)
-  DownloadCatalogSlice(catalog, dirname , rlat_idx, rlon_idx, session)
-  
   # create an outputs filename without the date part
   
   file0 = catalog.datasets[0].name
@@ -216,8 +213,11 @@ def ConcatenatedCatalogSlice(catalog, Outdir , rlat_idx=None, rlon_idx=None,
     Message('Concatenated file exists, skipping:  %s' % outfile)
     return
   
-  Message('Writing to directory: %s' % Outdir,2)
-  Message('Writing nc file: %s' % outfile_name,1)
+  Message('Directory for the downloads: %s' % dirname,2)
+  DownloadCatalogSlice(catalog, dirname , rlat_idx, rlon_idx, session)
+  
+  Message('Writing concatenated file to directory: %s' % Outdir,2)
+  Message('Writing concatenated nc file: %s' % outfile_name,1)
   
   xList = catalog.GetXarrayDatasetList(dirname)
   st_new = xr.merge(xList)
