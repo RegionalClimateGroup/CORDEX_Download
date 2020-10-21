@@ -220,7 +220,7 @@ def ConcatenatedCatalogSlice(catalog, Outdir , rlat_idx=None, rlon_idx=None,
   Message('Writing nc file: %s' % outfile_name,1)
   
   xList = catalog.GetXarrayDatasetList(dirname)
-  st_new = xr.concat(xList, dim='time')
+  st_new = xr.merge(xList)
   st_new.to_netcdf(outfile)
   st_new.close()
   catalog.CloseXarrayDatasetList()
