@@ -46,7 +46,7 @@ You need to get a list of the data you want to download! https://esg-dn1.nsc.liu
 
 With your config.py edited, try running CORDEX_download_Example.py
 
-The basic usage is:
+The basic usage (from CORDEX_download_Example.py) :
 ```python
 # ~Norden in EU11
 rlat_idx=slice(250,391)
