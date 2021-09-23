@@ -6,6 +6,7 @@ Download a selection of CMIP5 data for Sweden
 """
 
 import os
+from pathlib import Path
 
 #from pydap.client import open_url
 from pydap.cas.esgf import setup_session
@@ -35,7 +36,11 @@ rlon_idx=slice(198,286)
 
 f = 'CMIP5_test.json'
 
-Outdir = '/data/Home/DavidR/CMIP5/DATA'
+if os.name=='nt':
+  Outdir = Path('C:/Users/xrayda/LOCALDATA/CMIP5/DATA')
+else:
+  Outdir = '/data/Home/DavidR/CMIP5/DATA'
+
 
 
 # try a list
@@ -45,7 +50,7 @@ p.Print()
 
 #DownloadCatalogSlice(p.Catalog[0], Outdir , rlat_idx, rlon_idx, session=None)
 
-ConcatenatedCatalogSlice(p.Catalog, Outdir , rlat_idx, rlon_idx, retain_raw_files=True, session=session)
+#ConcatenatedCatalogSlice(p.Catalog, Outdir , rlat_idx, rlon_idx, retain_raw_files=True, session=session)
 
 
         

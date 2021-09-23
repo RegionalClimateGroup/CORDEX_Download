@@ -18,7 +18,13 @@ import xarray as xr
 # locally-defined
 import config
 import generic_lib
-from generic_lib import Message
+
+def Message(message, lvl=1, newline=True):
+  if config.debug >= lvl:
+    if newline:
+      print(message)
+    else:
+      print(message, end='')
 
 class CatalogEntry:
   """ Summary of a model run output for a single variable.
