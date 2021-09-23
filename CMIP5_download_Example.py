@@ -38,8 +38,10 @@ f = 'CMIP5_test.json'
 Outdir = '/data/Home/DavidR/CMIP5/DATA'
 
 
-##### try a list
+# try a list
 p=JSONParser(f)
+# what have we got?
+p.Print()
 
 #DownloadCatalogSlice(p.Catalog[0], Outdir , rlat_idx, rlon_idx, session=None)
 
