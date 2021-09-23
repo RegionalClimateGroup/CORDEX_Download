@@ -6,14 +6,7 @@ Genericly-useful routines.
 """
 
 import os
-import config
 
-def Message(message, lvl=1, newline=True):
-  if config.debug >= lvl:
-    if newline:
-      print(message)
-    else:
-      print(message, end='')
     
 def CheckDirExists(dir_name):
   """
