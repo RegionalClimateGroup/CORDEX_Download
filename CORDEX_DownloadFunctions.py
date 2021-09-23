@@ -123,6 +123,10 @@ class JSONParser:
     
     with open(filename) as f:
       metadata1 = json.load(f)
+      fq =metadata1['responseHeader']['params']['fq']  
+      matching = [s for s in fq if "variable" in s]
+      variables = re.findall( 'variable\:\"(.*?)\"' , matching[0]) 
+      
       docs = metadata1['response']['docs']
       
       for doc in docs:
@@ -138,7 +142,10 @@ class JSONParser:
         datasets_ = list()
         for i in range(len(catalog_.datasets)):
            ds = catalog_.datasets[i]
-           if ds.name.find('aggregation') <0:
+           is_aggregation = 'aggregation' in ds.name.split('.')
+           is_variable = any(x in variables for x in ds.name.split('.'))
+           
+           if is_aggregation and is_variable:
              datasets_.append(ds)
         
         #  now put them in alphabatical (ie time) order

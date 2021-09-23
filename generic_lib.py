@@ -23,9 +23,9 @@ def FindDir(dir_list):
   Useful for setting up config files to work across multiple machines/architectures
   """
   
-  for dirname in dir_list:
-    if os.path.isdir(dir_name)
-      return dirname
+  for dir_name in dir_list:
+    if os.path.isdir(dir_name):
+      return dir_name
   raise Exception("no existing directory found!") 
 
 def RemoveFile(fname):
