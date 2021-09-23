@@ -24,12 +24,9 @@ def FindDir(dir_list):
   """
   
   for dirname in dir_list:
-    try:
-      CheckDirExists(dirname)
+    if os.path.isdir(dir_name)
       return dirname
-    except:
-      pass
-  raise
+  raise Exception("no existing directory found!") 
 
 def RemoveFile(fname):
    """
