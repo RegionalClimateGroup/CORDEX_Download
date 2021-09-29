@@ -123,6 +123,7 @@ class JSONParser:
     
     with open(filename) as f:
       metadata1 = json.load(f)
+      # find the variables we searched for:
       fq =metadata1['responseHeader']['params']['fq']  
       matching = [s for s in fq if "variable" in s]
       variables = re.findall( 'variable\:\"(.*?)\"' , matching[0]) 
