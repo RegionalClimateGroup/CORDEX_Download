@@ -26,8 +26,8 @@ rlat_idx=slice(250,391)
 rlon_idx=slice(198,286)
 
 
-ModelSelectionFilename = os.path.join('Example','monthly_test.json')
-Outdir =  os.path.join('Example','Data')
+ModelSelectionFilename = os.path.join('CORDEX_Example','monthly_test.json')
+Outdir =  os.path.join('CORDEX_Example','Data')
 
 p=JSONParser(ModelSelectionFilename)
 ConcatenatedCatalogSlice(p.Catalog, Outdir , rlat_idx, rlon_idx, retain_raw_files=False)
