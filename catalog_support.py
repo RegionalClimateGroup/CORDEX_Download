@@ -130,38 +130,39 @@ class JSONParser:
       
       docs = metadata1['response']['docs']
       
-      for doc in docs:
-        
-        Message('Found ' + doc['title'])
-        ## now switch to using TDSCatalog
-        # get the catalogUrl
-        tmp = doc['url'][0].index('.xml#') + 4
-        catUrl = doc['url'][0][0:tmp]   
-
-        catalog_ = TDSCatalog(catUrl)
-        
-        datasets_ = list()
-        for i in range(len(catalog_.datasets)):
-           ds = catalog_.datasets[i]
-           # aggregation is last after .
-           is_aggregation = 'aggregation' in ds.name.split('.')
-           # variable is first before _
-           is_variable = any(x in variables for x in ds.name.split('_'))
-           
-           if (not is_aggregation) and is_variable:
-             datasets_.append(ds)
-        
-        #  now put them in alphabatical (ie time) order
-        zipped_lists = zip([str(d) for d in datasets_], datasets_)
-        sorted_zipped_lists = sorted(zipped_lists)
-        datasets_ = [element for _, element in sorted_zipped_lists]
-        
-        for i,d in enumerate(datasets_):
-          Message('  %d %s' % (i, d.name),2)
-        
-        c = CatalogEntry(title=doc['title'], variable=doc['variable'][0], datasets=datasets_)
-        self.Catalog.append(c)
+      for variable in variables:
+        for doc in docs:
+          
+          Message('Found ' + doc['title'])
+          ## now switch to using TDSCatalog
+          # get the catalogUrl
+          tmp = doc['url'][0].index('.xml#') + 4
+          catUrl = doc['url'][0][0:tmp]   
   
+          catalog_ = TDSCatalog(catUrl)
+          
+          datasets_ = list()
+          for i in range(len(catalog_.datasets)):
+             ds = catalog_.datasets[i]
+             # aggregation is last after .
+             is_aggregation = 'aggregation' in ds.name.split('.')
+             # variable is first before _
+             is_variable = variable in ds.name.split('_')
+             
+             if (not is_aggregation) and is_variable:
+               datasets_.append(ds)
+          
+          #  now put them in alphabatical (ie time) order
+          zipped_lists = zip([str(d) for d in datasets_], datasets_)
+          sorted_zipped_lists = sorted(zipped_lists)
+          datasets_ = [element for _, element in sorted_zipped_lists]
+          
+          for i,d in enumerate(datasets_):
+            Message('  %d %s' % (i, d.name),2)
+          
+          c = CatalogEntry(title=doc['title'], variable=variable, datasets=datasets_)
+          self.Catalog.append(c)
+    
   def Print(self):
     """ Screen pretty printer
     """
