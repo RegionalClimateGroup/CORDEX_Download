@@ -8,7 +8,9 @@ import os
 
 #from pydap.client import open_url
 from pydap.cas.esgf import setup_session
-from CORDEX_DownloadFunctions import JSONParser, ConcatenatedCatalogSlice
+
+from catalog_support import JSONParser
+from CORDEX_DownloadFunctions import ConcatenatedCatalogSlice
 
 import config
 
