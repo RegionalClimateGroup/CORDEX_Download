@@ -142,10 +142,12 @@ class JSONParser:
         datasets_ = list()
         for i in range(len(catalog_.datasets)):
            ds = catalog_.datasets[i]
+           # aggregation is last after .
            is_aggregation = 'aggregation' in ds.name.split('.')
-           is_variable = any(x in variables for x in ds.name.split('.'))
+           # variable is first before _
+           is_variable = any(x in variables for x in ds.name.split('_'))
            
-           if is_aggregation and is_variable:
+           if (not is_aggregation) and is_variable:
              datasets_.append(ds)
         
         #  now put them in alphabatical (ie time) order
