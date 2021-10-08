@@ -185,7 +185,8 @@ def DownloadSlice(variable,  url, outfile, rlat_idx=None, rlon_idx=None, time_id
       session = setup_session(config.openid, config.password, verify=True, check_url=url)
   """
   if session==None:
-    session = setup_session(config.openid, config.password, verify=True, check_url=config.check_url)
+    Message('login with test url '%url)
+    session = setup_session(config.openid, config.password, verify=True, check_url=url)
   
   Message('download from %s'%url,2)
     
